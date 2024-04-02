@@ -11,6 +11,14 @@ High quality audio downloader using youtube-dl
 
 - No clue. Maybe support video download aswell
 
+## How to use
+
+- Copy the ID of the youtube video like this:
+![Screenshot](https://github.com/osudirect/yt2mp3/assets/45440100/e809bfaf-040a-42eb-bd37-6d032598b306)
+- use the copied id like this:
+https://audio.catboy.best/eNSRlrYDvFE
+to extract and download the audio from the video.
+Completely free. No ads, no premium queue, no speed cap.
 
 ## Self-hosting
 
