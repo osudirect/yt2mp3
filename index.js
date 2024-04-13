@@ -23,7 +23,7 @@ fastify.get("/:id", async ({ params }, reply) => {
             fs.rmSync(`temp/${vID}`, { recursive: true, force: true })
             const buffer = fs.statSync(`temp/${vID}.mp3`).size
             reply.header('Content-Length', buffer);
-            reply.header("Content-Disposition", `attachment; filename="${encodeURI(videoDetails.title)}"`)
+            reply.header("Content-Disposition", `attachment; filename="${encodeURI(videoDetails.title)}.mp3"`)
             const stream = fs.createReadStream(`temp/${vID}.mp3`)
             stream.on("end", () => {
                 fs.rmSync(`temp/${vID}.mp3`, { recursive: true, force: true })
