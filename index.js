@@ -19,8 +19,6 @@ fastify.get("/:id", async ({ params }, reply) => {
     })
 
     const vID = videoID++
-    console.log(format)
-    console.log(Math.floor(format.averageBitrate / 1000))
     const ffmpeg = spawn('ffmpeg', ['-i', 'pipe:', '-vn', '-b:a', `128k`, '-f', 'mp3', '-'])
     ffmpeg.on("exit", (code) => {
         if(code != 0) return;
