@@ -13,6 +13,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
+    "meilisearch": "^0.38.0",
     "ytdl-core": "^4.11.5"
   }
 }
