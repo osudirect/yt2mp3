@@ -4,58 +4,63 @@ import { fastify as f } from "fastify"
 import ytdl from "ytdl-core"
 import { spawn } from "child_process"
 import { MeiliSearch } from "meilisearch"
+import cors from "@fastify/cors"
 
 let videoID = 0;
 let database;
 
-const fastify = f({ trustProxy: true })
-if(!await fs.promises.stat(".data").catch(() => {})) await fs.promises.mkdir(".data")
+const fastify = f({ trustProxy: true, logger: true })
+fastify.register(cors);
+if (!await fs.promises.stat(".data").catch(() => { })) await fs.promises.mkdir(".data")
 
-if(process.env.enableDatabase){
+if (process.env.enableDatabase === "true") {
     database = new MeiliSearch({
         host: process.env.databaseHost,
         apiKey: process.env.databaseKey,
     })
-    await database.createIndex("songs").catch(() => {})
+    await database.createIndex("songs").catch(() => { })
 }
+
 fastify.get("/:id", async ({ params }, reply) => {
     let info;
     let cached = true;
     let convertStart;
     const start = Date.now()
 
-    if(database){
-        info = await database.index("songs").getDocument(params.id).catch(() => {}) 
+    if (database) {
+        info = await database.index("songs").getDocument(params.id).catch(() => { })
     }
 
-    if(!info){
+    if (!info) {
         cached = false;
-        info = await ytdl.getInfo(params.id).catch(() => {})
+        info = await ytdl.getInfo(params.id).catch(() => { })
     }
 
     const { videoDetails, formats } = info
 
-    if(!videoDetails){
+    if (!videoDetails) {
         return reply.code(404).send({ error: "Invalid id" })
     }
 
-    if(videoDetails.isLiveContent){
+    if (videoDetails.isLiveContent) {
         return reply.code(400).send({ error: "Live videos are not supported" })
     }
 
-    if(videoDetails.isPrivate){
+    if (videoDetails.isPrivate) {
         return reply.code(400).send({ error: "We can't access private videos" })
     }
 
     const length = Number(videoDetails.lengthSeconds)
 
-    if(length > (process.env.maxLength || 600)){
-        return reply.code(400).send({ error: `Audio too long (${length}/${process.env.maxLength || 600} seconds)`})
+    if (length > (process.env.maxLength || 600)) {
+        return reply.code(400).send({ error: `Audio too long (${length}/${process.env.maxLength || 600} seconds)` })
     }
 
     const format = ytdl.chooseFormat(formats, { filter: "audioonly", quality: "highestaudio" })
 
-    if(database && !cached){
+    const thumbnail = videoDetails.thumbnails[videoDetails.thumbnails.length - 1];
+
+    if (database && !cached) {
         await database.index("songs").addDocuments([{
             id: params.id,
             videoDetails: {
@@ -63,17 +68,21 @@ fastify.get("/:id", async ({ params }, reply) => {
                 lengthSeconds: videoDetails.lengthSeconds,
                 viewCount: videoDetails.viewCount,
                 ownerChannelName: videoDetails.ownerChannelName,
-                keywords: videoDetails.keywords
+                keywords: videoDetails.keywords,
+                thumbnails: [thumbnail]
             },
             formats: [format]
         }])
     }
 
+    reply.header("Access-Control-Expose-Headers", "Title, Thumbnail");
+    reply.header("Title", encodeURI(videoDetails.title));
+    reply.header("Thumbnail", thumbnail.url);
     reply.header("Content-Disposition", `attachment; filename="${encodeURI(videoDetails.title)}.mp3"`)
     reply.header("Content-Length", (128000 / 8) * (format.approxDurationMs / 1000).toString())
 
-    if(process.env.localStorage){
-        if(await fs.promises.stat(`./.data/${params.id}`).catch(() => undefined)){
+    if (process.env.localStorage) {
+        if (await fs.promises.stat(`./.data/${params.id}`).catch(() => undefined)) {
             console.log(`Serving ${videoDetails.title} by ${videoDetails.ownerChannelName} (${Date.now() - start}ms)`)
             return reply.send(fs.createReadStream(`./.data/${params.id}`))
         }
@@ -89,22 +98,22 @@ fastify.get("/:id", async ({ params }, reply) => {
         reply.send(ffmpeg.stdout)
 
         const download = ytdl(params.id, { format })
-        
+
         download.pipe(ffmpeg.stdin).on("error", async () => {
             console.log(`Aborted converting ${videoDetails.title} - ${vID}`)
-            if(writeStream){
+            if (writeStream) {
                 writeStream.close()
                 await fs.promises.unlink(`./.data/${params.id}`)
             }
         })
 
-        if(writeStream){
+        if (writeStream) {
             ffmpeg.stdout.pipe(writeStream)
         }
     })
 
     ffmpeg.on("exit", async (code) => {
-        if(code != 0){
+        if (code != 0) {
             return;
         }
         console.log(`Finished converting ${videoDetails.title} by ${videoDetails.ownerChannelName} - ${vID} (${((Date.now() - convertStart) / 1000).toFixed(2)}s)`)
@@ -112,6 +121,12 @@ fastify.get("/:id", async ({ params }, reply) => {
 
 
     return reply;
+})
+
+
+fastify.get("/search", async ({ query }, reply) => {
+    const search = await database.index("songs").search(query.q);
+    return search.hits;
 })
 
 fastify.listen({ host: "0.0.0.0", port: process.env.port || 2461 })
