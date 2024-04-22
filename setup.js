@@ -3,8 +3,8 @@ import fs from "fs/promises"
 import { MeiliSearch } from "meilisearch";
 let database;
 if(process.env.localStorage === "true"){
-    if (!await fs.promises.stat(".data").catch(() => { })){
-        await fs.promises.mkdir(".data")
+    if (!await fs.stat(".data").catch(() => { })){
+        await fs.mkdir(".data")
     }
 }
 
