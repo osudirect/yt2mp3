@@ -11,14 +11,12 @@ let database;
 
 const fastify = f({ trustProxy: true })
 fastify.register(cors);
-if (!await fs.promises.stat(".data").catch(() => { })) await fs.promises.mkdir(".data")
 
 if (process.env.enableDatabase === "true") {
     database = new MeiliSearch({
         host: process.env.databaseHost,
         apiKey: process.env.databaseKey,
     })
-    await database.createIndex("songs").catch(() => { })
 }
 
 fastify.get("/api/:id", async ({ params }, reply) => {
@@ -127,7 +125,7 @@ fastify.get("/api/:id", async ({ params }, reply) => {
 
 fastify.get("/api/search", async ({ query }, reply) => {
     const search = await database.index("songs").search(query.q, {
-        limit: query.limit
+        limit: query.limit,
         offset: query.offset
     });
     return search.hits;

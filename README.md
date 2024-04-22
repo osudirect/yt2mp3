@@ -1,23 +1,22 @@
 # yt2mp3
-High quality audio downloader using youtube-dl
-
+High quality audio downloader using youtube-dl (Now with frontend!)
 
 ## Features
 
 - Extract youtube audios in the highest quality possible
+- a cool webui using [our frontend](https://www.github.com/osudirect/yt2mp3-web)
 - That's it lol
 
 ## Roadmap
 
 - No clue. Maybe support video download aswell
+If you wish for something, please open an issue!
 
 ## How to use
 
-- Copy the ID of the youtube video like this:
-![Screenshot](https://github.com/osudirect/yt2mp3/assets/45440100/e809bfaf-040a-42eb-bd37-6d032598b306)
-- use the copied id like this:
-https://audio.catboy.best/eNSRlrYDvFE
-to extract and download the audio from the video.
+- Copy the YouTube video url
+- Visit https://audio.catboy.best
+- Paste link into the search bar to extract and download the audio from the video.
 Completely free. No ads, no premium queue, no speed cap.
 
 ## Self-hosting
@@ -44,6 +43,7 @@ install all necessary dependencies using npm and start the script.
 
 ```bash
   npm install
+  node setup.js
   node index.js
 ```
 
