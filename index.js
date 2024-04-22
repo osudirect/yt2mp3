@@ -9,7 +9,7 @@ import cors from "@fastify/cors"
 let videoID = 0;
 let database;
 
-const fastify = f({ trustProxy: true, logger: true })
+const fastify = f({ trustProxy: true })
 fastify.register(cors);
 if (!await fs.promises.stat(".data").catch(() => { })) await fs.promises.mkdir(".data")
 
@@ -71,7 +71,8 @@ fastify.get("/api/:id", async ({ params }, reply) => {
                 keywords: videoDetails.keywords,
                 thumbnails: [thumbnail]
             },
-            formats: [format]
+            formats: [format],
+            added: Date.now()
         }])
     }
 
@@ -125,7 +126,10 @@ fastify.get("/api/:id", async ({ params }, reply) => {
 
 
 fastify.get("/api/search", async ({ query }, reply) => {
-    const search = await database.index("songs").search(query.q);
+    const search = await database.index("songs").search(query.q, {
+        limit: query.limit
+        offset: query.offset
+    });
     return search.hits;
 })
 
