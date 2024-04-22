@@ -17,6 +17,8 @@ If you wish for something, please open an issue!
 - Copy the YouTube video url
 - Visit https://audio.catboy.best
 - Paste link into the search bar to extract and download the audio from the video.
+- ![Screenshot](https://github.com/osudirect/yt2mp3/assets/45440100/d7405579-0116-46b8-aab5-f674ecd0e492)
+
 Completely free. No ads, no premium queue, no speed cap.
 
 ## Self-hosting
