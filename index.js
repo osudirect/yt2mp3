@@ -126,8 +126,8 @@ fastify.get("/api/:id", async ({ params }, reply) => {
 fastify.get("/api/search", async ({ query }, reply) => {
     //TODO: add filter
     const search = await database.index("songs").search(query.q, {
-        limit: query.limit,
-        offset: query.offset,
+        limit: Number(query.limit),
+        offset: Number(query.offset),
         sort: [query.sort || "added:desc"]
     });
     return search.hits;
