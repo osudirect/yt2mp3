@@ -21,7 +21,7 @@ if (process.env.enableDatabase === "true") {
     await database.createIndex("songs").catch(() => { })
 }
 
-fastify.get("/:id", async ({ params }, reply) => {
+fastify.get("/api/:id", async ({ params }, reply) => {
     let info;
     let cached = true;
     let convertStart;
@@ -124,7 +124,7 @@ fastify.get("/:id", async ({ params }, reply) => {
 })
 
 
-fastify.get("/search", async ({ query }, reply) => {
+fastify.get("/api/search", async ({ query }, reply) => {
     const search = await database.index("songs").search(query.q);
     return search.hits;
 })
