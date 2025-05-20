@@ -1,6 +1,5 @@
 {
-  "name": "audio-service",
-  "type": "module",
+  "name": "yt2mp3",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,11 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
-    "@fastify/cors": "^9.0.1",
-    "dotenv": "^16.4.5",
-    "fastify": "^4.26.2",
-    "meilisearch": "^0.38.0",
-    "ytdl-core": "^4.11.5"
+    "@distube/ytdl-core": "^4.16.10",
+    "@fastify/cors": "^11.0.1",
+    "dotenv": "^16.5.0",
+    "fastify": "^5.3.3",
+    "meilisearch": "^0.50.0"
   }
 }

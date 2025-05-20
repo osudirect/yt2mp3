@@ -24,11 +24,12 @@ Completely free. No ads, no premium queue, no speed cap.
 ## Self-hosting
 
 This instance requires only a tiny amount of work to setup yourself.
-Following requirements have been tested on Ubuntu 20.04
+Following requirements have been tested on Ubuntu 24.04
 
-Node.js - tested on 20.12
+Node.js - tested on 24.0.2 (need at least version 20.10)
 ffmpeg - tested on 4.2.7
 nginx - tested on 1.18.0
+meilisearch - tested on 1.14
 
 Now to the installation:
 
@@ -45,7 +46,6 @@ install all necessary dependencies using npm and start the script.
 
 ```bash
   npm install
-  node setup.js
   node index.js
 ```
 
